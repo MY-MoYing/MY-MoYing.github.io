@@ -1,10 +1,777 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>我的个人网站</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>选择性必修一 · TAG猜术语 · 期中考复习题库</title>
+<style>
+  :root{
+    --bg:#f5f6f8;
+    --card:#ffffff;
+    --ink:#1c2024;
+    --ink-2:#4a5158;
+    --ink-3:#7d858d;
+    --line:#e3e6ea;
+    --brand:#0f766e;
+    --warn:#b45309;
+    --warn-bg:#fff7ed;
+    --ok:#047857;
+    --ch1:#0d9488;
+    --ch2:#4338ca;
+    --ch3:#c2410c;
+    --ch4:#7c3aed;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Source Han Sans SC",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    background:#fff;border-bottom:1px solid var(--line);
+    padding:14px 24px;display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
+  }
+  header h1{font-size:19px;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:13px;color:var(--ink-3);}
+  .bar{
+    background:#fff;border-bottom:1px solid var(--line);
+    padding:10px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    position:sticky;top:0;z-index:20;
+  }
+  button,.tab{
+    font-family:inherit;font-size:13px;cursor:pointer;
+    border:1px solid var(--line);background:#fff;color:var(--ink-2);
+    padding:6px 13px;border-radius:999px;transition:.15s;
+  }
+  button:hover,.tab:hover{border-color:#b9bfc6;color:var(--ink);}
+  .tab.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .tab.on.c1{background:var(--ch1);border-color:var(--ch1);}
+  .tab.on.c2{background:var(--ch2);border-color:var(--ch2);}
+  .tab.on.c3{background:var(--ch3);border-color:var(--ch3);}
+  .tab.on.c4{background:var(--ch4);border-color:var(--ch4);}
+  .spacer{flex:1;}
+  .counter{font-size:13px;color:var(--ink-3);font-variant-numeric:tabular-nums;}
+  label.chk{font-size:13px;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px;cursor:pointer;}
+
+  /* ---------- 单卡投屏 ---------- */
+  #stage{padding:26px 24px 60px;display:flex;justify-content:center;}
+  .stage-card{
+    width:100%;max-width:940px;background:var(--card);border:1px solid var(--line);
+    border-radius:16px;box-shadow:0 6px 24px rgba(20,25,35,.06);
+    overflow:hidden;
+  }
+  .sc-top{padding:18px 30px 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .chip{font-size:12px;padding:4px 11px;border-radius:6px;background:#f1f3f5;color:var(--ink-2);}
+  .chip.ch{color:#fff;font-weight:600;letter-spacing:.5px;}
+  .chip.core{background:#fff7e6;color:#92400e;border:1px solid #fcd9a0;}
+  .sc-body{padding:16px 30px 26px;}
+  .ask{font-size:16px;color:var(--ink-3);letter-spacing:1px;margin-bottom:16px;}
+  .tags{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:22px;}
+  .tag{
+    font-size:26px;line-height:1.35;font-weight:700;letter-spacing:.5px;
+    padding:12px 20px;border-radius:12px;border:2px dashed;border-style:dashed;
+  }
+  .reveal-slot{min-height:132px;}
+  .reveal-btn{
+    width:100%;border:2px dashed #cfd5db;background:#fafbfc;color:var(--ink-3);
+    border-radius:12px;padding:40px 20px;font-size:19px;letter-spacing:3px;
+  }
+  .reveal-btn:hover{border-color:var(--brand);color:var(--brand);background:#f0fbf9;}
+  .ans-box{border-radius:12px;padding:20px 24px;background:#f8fafb;border:1px solid var(--line);}
+  .ans-name{font-size:36px;font-weight:800;letter-spacing:1px;line-height:1.25;}
+  .ans-meta{font-size:13px;color:var(--ink-3);margin-top:6px;letter-spacing:.5px;}
+  .sec{margin-top:16px;font-size:15px;line-height:1.85;color:var(--ink-2);}
+  .sec b{color:var(--ink);font-weight:700;}
+  .sec-head{
+    display:inline-block;font-size:12px;letter-spacing:1px;margin-bottom:5px;
+    padding:2px 9px;border-radius:5px;background:#eef2f5;color:var(--ink-2);
+  }
+  .sec.trap{background:var(--warn-bg);border:1px solid #fcd9a0;border-radius:10px;padding:14px 18px;margin-top:14px;}
+  .sec.trap .sec-head{background:#fde9c8;color:#92400e;}
+  .sc-foot{
+    padding:14px 30px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;
+    background:#fbfcfd;
+  }
+  .sc-foot button{padding:8px 18px;font-size:14px;}
+  .dots{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;flex:1;}
+  .dot{width:7px;height:7px;border-radius:50%;background:#d3d8dd;cursor:pointer;}
+  .dot.now{background:var(--ink);transform:scale(1.5);}
+  .dot.done{background:#9aa3aa;}
+
+  /* ---------- 总表 ---------- */
+  #list{padding:20px 24px 60px;display:none;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:14px;}
+  .mini{
+    background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+    display:flex;flex-direction:column;gap:9px;
+  }
+  .mini .m-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .mini .num{font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums;}
+  .mini .m-tags{display:flex;flex-wrap:wrap;gap:6px;}
+  .mini .m-tag{font-size:13px;font-weight:600;padding:3px 9px;border-radius:6px;background:#f1f3f5;color:var(--ink-2);}
+  .m-ans{
+    font-size:19px;font-weight:800;padding:9px 12px;border-radius:8px;
+    background:#eeeef0;color:transparent;user-select:none;cursor:pointer;letter-spacing:.5px;
+  }
+  .m-ans.open{background:#e8f6f2;color:var(--ok);}
+  .m-exp{font-size:13px;line-height:1.75;color:var(--ink-2);}
+  .m-trap{font-size:13px;line-height:1.7;color:#92400e;background:var(--warn-bg);border:1px solid #fcd9a0;border-radius:8px;padding:8px 11px;}
+  .m-trap b{color:var(--warn);}
+
+  /* ---------- 页码徽标 ---------- */
+  .chip.pg{background:#e8f6f2;color:var(--brand);font-weight:600;}
+
+  /* ---------- 完成横幅 ---------- */
+  .done-banner{
+    margin-top:14px;border:1px solid #a7d9cf;background:#f0fbf9;border-radius:10px;
+    padding:12px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  }
+  .done-banner span{color:var(--brand);font-weight:700;font-size:15px;}
+  .done-banner button{border-color:var(--brand);color:var(--brand);font-weight:600;}
+
+  /* ---------- 思维导图弹窗 ---------- */
+  #mapOverlay{
+    position:fixed;inset:0;background:rgba(18,22,26,.55);z-index:50;
+    display:none;align-items:center;justify-content:center;padding:24px;
+  }
+  #mapOverlay.on{display:flex;}
+  .map-card{
+    background:var(--bg);border-radius:16px;max-width:96vw;max-height:94vh;
+    display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 48px rgba(0,0,0,.25);
+  }
+  .map-head{padding:14px 22px;background:#fff;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .map-head b{font-size:16px;letter-spacing:.5px;}
+  .map-head .hint{font-size:12px;color:var(--ink-3);}
+  .map-scroll{overflow:auto;padding:6px;}
+  #mapWrap svg{display:block;background:
+    radial-gradient(circle at 50% 50%, #ffffff 0%, #f7f9fa 100%);}
+  .leaf{cursor:pointer;}
+  .leaf rect{transition:.15s;}
+  .leaf:hover rect{stroke-width:2.5;filter:brightness(.96);}
+
+  /* ---------- 概念详情弹窗 ---------- */
+  #nodeOverlay{
+    position:fixed;inset:0;background:rgba(18,22,26,.55);z-index:60;
+    display:none;align-items:center;justify-content:center;padding:24px;
+  }
+  #nodeOverlay.on{display:flex;}
+  .node-card{
+    background:#fff;border-radius:16px;width:min(640px,94vw);max-height:90vh;overflow:auto;
+    padding:24px 28px;box-shadow:0 12px 48px rgba(0,0,0,.3);
+  }
+  .node-card .tags{margin-bottom:18px;}
+  .node-card .tag{font-size:20px;padding:10px 16px;}
+  .node-foot{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
+
+  @media print{
+    header,.bar,.sc-foot,#stage{display:none!important;}
+    #list{display:block!important;padding:0;}
+    .grid{grid-template-columns:1fr 1fr;}
+    .mini{break-inside:avoid;border-color:#999;}
+    .m-ans{color:var(--ok)!important;background:#e8f6f2!important;}
+  }
+</style>
 </head>
 <body>
-    <h1>Hello World</h1>
-    <p>这是我的 GitHub Pages 个人网站。</p>
+
+<header>
+  <h1>高二生物 · 选择性必修一 TAG猜术语</h1>
+  <span class="sub">期中复习 · 第1—4章 · 共 <span id="total"></span> 题（核心 <span id="coreNum"></span> 题）</span>
+</header>
+
+<div class="bar">
+  <span class="tab on" id="modeStage" onclick="setMode('stage')">投屏复习卡</span>
+  <span class="tab" id="modeList" onclick="setMode('list')">答案总表</span>
+  <span style="width:1px;height:20px;background:var(--line);margin:0 6px;"></span>
+  <span class="tab on" data-ch="all" onclick="setCh('all')">全部</span>
+  <span class="tab c1" data-ch="1" onclick="setCh('1')">第1章 内环境</span>
+  <span class="tab c2" data-ch="2" onclick="setCh('2')">第2章 神经</span>
+  <span class="tab c3" data-ch="3" onclick="setCh('3')">第3章 体液</span>
+  <span class="tab c4" data-ch="4" onclick="setCh('4')">第4章 免疫</span>
+  <label class="chk"><input type="checkbox" id="onlyCore" onchange="applyFilter()">只看核心题</label>
+  <span class="spacer"></span>
+  <span class="counter" id="counter"></span>
+  <button onclick="revealAll()">全部揭晓</button>
+  <button onclick="openMap()" style="border-color:var(--brand);color:var(--brand);font-weight:600">思维导图</button>
+  <button onclick="window.print()">打印 / 存PDF</button>
+</div>
+
+<main id="stage"></main>
+<main id="list"></main>
+
+<!-- 思维导图弹窗 -->
+<div id="mapOverlay" onclick="if(event.target===this)closeMap()">
+  <div class="map-card">
+    <div class="map-head">
+      <b>选择性必修1 · 概念导图（第1—4章）</b>
+      <span class="hint">点任意概念可查看它的 3 个描述标签 · 点空白处关闭</span>
+      <span class="spacer" style="flex:1"></span>
+      <button onclick="closeMap()">关闭</button>
+    </div>
+    <div class="map-scroll"><div id="mapWrap"></div></div>
+  </div>
+</div>
+
+<!-- 概念详情弹窗 -->
+<div id="nodeOverlay" onclick="if(event.target===this)closeNode()">
+  <div class="node-card" id="nodeCard"></div>
+</div>
+
+<script>
+const DATA = [
+/* ============ 第1章 内环境与稳态 ============ */
+{ch:1,type:"概念",core:true,ask:"猜一个概念",
+ tags:["#细胞直接生活于其中","#血浆、组织液、淋巴三件套","#体内细胞水灵灵地泡在里面的一池液体"],
+ ans:"内环境（细胞外液）",pg:"P3–4",
+ exp:"由<b>血浆、组织液、淋巴</b>等细胞外液构成、是体内细胞<b>直接生活</b>的液体环境。判断标准只有一条：看它是不是<b>细胞外液</b>。",
+ trap:"呼吸道、消化道、尿道等与外界相通的管腔内的液体（唾液、胃液、尿液、泪液、汗液）<b>都不属于内环境</b>；单细胞生物和植物也没有内环境。还要注意：<b>血液≠血浆</b>，血液包含血浆和血细胞。"},
+
+{ch:1,type:"概念",core:true,ask:"猜一个概念",
+ tags:["#组成成分 + 理化性质双双达标","#是相对稳定，而非恒定不变","#内环境的六边形战士：每一项都稳"],
+ ans:"稳态（内环境稳态）",pg:"P7",
+ exp:"正常机体通过调节作用，使各器官、系统协调活动，共同维持<b>内环境的相对稳定状态</b>。稳态包含两个维度：<b>组成成分</b> + <b>理化性质</b>（渗透压、温度、酸碱度）。",
+ trap:"答题必须写<b>“相对稳定”</b>，写“恒定”“不变”都判错；调节机制要写全<b>“神经—体液—免疫调节网络”</b>，只写神经调节扣分。"},
+
+{ch:1,type:"概念",core:true,ask:"猜一个理化性质",
+ tags:["#溶液中溶质微粒对水的吸引力","#微粒数目越多，抢水越凶","#Na⁺与Cl⁻贡献了九成以上"],
+ ans:"渗透压",pg:"P5",
+ exp:"指<b>溶液中溶质微粒对水的吸引力</b>。其大小取决于单位体积溶液中溶质微粒的<b>数目</b>，与微粒的大小无关。细胞外液渗透压的<b>90%以上</b>来源于<b>Na⁺和Cl⁻</b>。",
+ trap:"血浆渗透压主要与<b>蛋白质和无机盐</b>有关；但“90%以上”那一问的标准答案是<b>Na⁺和Cl⁻</b>——两句话针对的是不同问题时，别混答。"},
+
+{ch:1,type:"物质",core:false,ask:"猜一类物质",
+ tags:["#专治乳酸上头","#H₂CO₃ / NaHCO₃ 挑大梁","#把血浆pH稳在7.35~7.45"],
+ ans:"缓冲物质（缓冲对）",pg:"P8",
+ exp:"血浆中存在<b>H₂CO₃/NaHCO₃（主要）</b>、NaH₂PO₄/Na₂HPO₄ 等缓冲对，能中和进入血液的酸性或碱性物质。剧烈运动产生的乳酸进入血液后与NaHCO₃反应，生成的H₂CO₃分解为CO₂由呼吸排出。",
+ trap:"写具体物质时<b>NaHCO₃是主要的一对</b>，漏写会扣分；pH是<b>相对稳定</b>，不是绝对不变。"},
+
+{ch:1,type:"现象",core:true,ask:"猜一种现象",
+ tags:["#脸肿得像发面馒头","#营养不良、肾小球肾炎都是诱因","#水从血浆进入组织液并积压"],
+ ans:"组织水肿",pg:"P10",
+ exp:"<b>组织液渗透压升高</b>或<b>血浆渗透压下降</b>，引起水分从血浆进入组织液并积累。常见诱因：①营养不良（血浆蛋白减少）；②肾小球肾炎（蛋白尿）；③毛细淋巴管堵塞；④过敏反应（毛细血管通透性增大）；⑤局部组织代谢旺盛。",
+ trap:"答“细胞内液增多”直接判错——增多的是<b>组织液</b>，属细胞外液。答题模板：<b>“血浆中的水分进入组织液，使组织液积累增多”</b>。"},
+
+{ch:1,type:"物质",core:false,ask:"猜一种物质",
+ tags:["#红细胞内的编制员工","#与血浆蛋白仅一字之差，命运不同","#属细胞内液，不算内环境成分"],
+ ans:"血红蛋白",pg:"P4",
+ exp:"血红蛋白存在于<b>红细胞内</b>，属于<b>细胞内液</b>成分，<b>不属于内环境</b>；血浆蛋白存在于血浆中，属于内环境成分。同理，呼吸酶（细胞内）、唾液淀粉酶（消化道）也都不属于内环境。",
+ trap:"题目常问“不属于”。反例清单：<b>呼吸酶、血红蛋白（细胞内）、唾液淀粉酶（消化道）、尿液（与外界相通）</b>——这四项通常都不算；而<b>血浆蛋白、尿素、CO₂、葡萄糖、激素、神经递质</b>都属于内环境成分。"},
+
+/* ============ 第2章 神经调节 ============ */
+{ch:2,type:"概念",core:true,ask:"猜一个概念",
+ tags:["#草履虫连参赛资格都没有","#中枢神经系统参与","#必须走完反射弧全程才作数"],
+ ans:"反射",pg:"P23",
+ exp:"在<b>中枢神经系统</b>参与下，机体对内外刺激所产生的<b>规律性应答反应</b>。判断两步：①是否有中枢神经系统参与；②是否经过<b>完整的反射弧</b>。",
+ trap:"刺激传出神经引起肌肉收缩<b>不是</b>反射（未经过完整反射弧）；针扎手“感觉到痛”<b>不是</b>反射（只在传入神经—大脑皮层形成感觉，未经完整反射弧）；草履虫趋利避害也不是反射（无神经系统）。"},
+
+{ch:2,type:"结构",core:false,ask:"猜一种结构",
+ tags:["#反射弧的最后一棒","#传出神经末梢及其支配的肌肉或腺体","#两部分缺一不可"],
+ ans:"效应器",pg:"P23",
+ exp:"效应器 = <b>传出神经末梢及其所支配的肌肉或腺体</b>。反射弧五环节：感受器→传入神经→神经中枢→传出神经→效应器。",
+ trap:"只写“肌肉”或只写“传出神经末梢”都不完整，<b>两部分必须同时答出</b>。"},
+
+{ch:2,type:"概念",core:true,ask:"猜一类反射",
+ tags:["#望梅止渴属于这挂的","#在非条件反射基础上经学习训练建立","#需要大脑皮层参与，不强化会消退"],
+ ans:"条件反射",pg:"P25",
+ exp:"在非条件反射的基础上，通过<b>学习和训练</b>建立的反射，需要<b>大脑皮层</b>参与。非条件反射大多终身不消退，条件反射可以消退。",
+ trap:"望梅止渴、谈虎色变、听到上课铃走进教室=条件反射；膝跳反射、缩手反射、眨眼反射=非条件反射。判断关键是<b>是否通过学习训练而建立</b>，而不是简单地看有没有大脑参与。"},
+
+{ch:2,type:"过程",core:true,ask:"猜一种电位",
+ tags:["#K⁺：我先撤了，你们随意","#膜电位外正内负","#由K⁺顺浓度梯度外流造成，协助扩散不耗ATP"],
+ ans:"静息电位",pg:"P28",
+ exp:"神经纤维未受刺激时，膜主要对<b>K⁺</b>有通透性，K⁺顺浓度梯度<b>外流</b>，使膜电位表现为<b>外正内负</b>。",
+ trap:"K⁺外流是<b>协助扩散</b>（经离子通道），<b>不消耗ATP</b>——这是选择题最爱设的坑，别写成主动运输。"},
+
+{ch:2,type:"过程",core:true,ask:"猜一种电位",
+ tags:["#膜电位当场倒戈","#由Na⁺迅速大量内流造成","#刺激要够强才触发"],
+ ans:"动作电位",pg:"P28",
+ exp:"受刺激时膜对<b>Na⁺</b>通透性增加，Na⁺迅速大量<b>内流</b>，膜电位由外正内负<b>逆转</b>为<b>外负内正</b>。",
+ trap:"组织液<b>Na⁺</b>浓度升高→动作电位<b>峰值变大</b>；K⁺浓度升高→静息电位<b>绝对值变小</b>。这一对是表格题常客。"},
+
+{ch:2,type:"过程",core:true,ask:"猜一种传导形式",
+ tags:["#离体时来一场双向奔赴","#兴奋部位与未兴奋部位有电位差","#膜内电流同向，膜外反向"],
+ ans:"局部电流（神经冲动的传导）",pg:"P28",
+ exp:"兴奋部位与相邻未兴奋部位之间存在<b>电位差</b>，发生电荷移动形成局部电流，刺激相邻部位产生同样的变化。膜<b>内</b>电流方向与兴奋传导方向<b>相同</b>，膜<b>外相反</b>。离体条件下刺激神经纤维中段，兴奋<b>双向传导</b>。",
+ trap:"“双向”只发生在<b>离体的神经纤维</b>上；完整反射弧中因突触的存在，传导是<b>单向</b>的。这一组对比几乎年年考。"},
+
+{ch:2,type:"结构",core:false,ask:"猜一种结构",
+ tags:["#逆浓度梯度硬搬，纯靠ATP的体力活","#吸K⁺、排Na⁺","#恢复膜内外的初始离子分布"],
+ ans:"Na⁺-K⁺泵（钠钾泵）",pg:"拓展",
+ exp:"一次兴奋结束后，膜上的<b>Na⁺-K⁺泵</b>消耗<b>ATP</b>进行<b>主动运输</b>，吸K⁺排Na⁺，恢复膜内外离子浓度差，为下一次兴奋做好准备。",
+ trap:"这里是<b>主动运输</b>；而静息电位形成（K⁺外流）与动作电位形成（Na⁺内流）都是<b>协助扩散</b>。三者务必分清。"},
+
+{ch:2,type:"结构",core:true,ask:"猜一种结构",
+ tags:["#两个神经元在此“贴贴”（但并不相连）","#由前膜、间隙、后膜构成","#间隙内的液体是组织液"],
+ ans:"突触",pg:"P28–29",
+ exp:"由一个神经元的<b>轴突末梢（突触小体）</b>与另一个神经元的<b>胞体或树突</b>相接触而形成，包括<b>突触前膜、突触间隙、突触后膜</b>。间隙内的液体是组织液，其中的神经递质<b>属于内环境成分</b>。",
+ trap:"两种常见类型：<b>轴突—胞体型</b>、<b>轴突—树突型</b>；突触小泡内的神经递质以<b>胞吐</b>方式释放，需要消耗能量。"},
+
+{ch:2,type:"过程",core:true,ask:"猜一种传递特性",
+ tags:["#这条街是单行道","#递质只能由突触前膜释放","#受体只分布在突触后膜"],
+ ans:"突触处兴奋的单向传递",pg:"P29",
+ exp:"神经递质<b>只能由突触前膜释放</b>，然后作用于<b>突触后膜上的受体</b>，所以神经元之间只能单向传递。",
+ trap:"立刻对照：<b>离体神经纤维上刺激中段是双向传导</b>。两个结论放在一起才完整，这也是课堂上最容易出彩的一组对比。"},
+
+{ch:2,type:"物质",core:true,ask:"猜一类物质",
+ tags:["#短暂“硬控”后膜，用完就走","#以胞吐方式释放，消耗能量","#分兴奋性和抑制性两类"],
+ ans:"神经递质",pg:"P29",
+ exp:"由突触前膜以<b>胞吐</b>方式释放，与突触后膜上的受体<b>特异性结合</b>。<b>兴奋性递质</b>打开Na⁺通道→Na⁺内流→下一个神经元兴奋；<b>抑制性递质</b>提高突触后膜对Cl⁻等的通透性，造成<b>Cl⁻内流（或K⁺外流）</b>，使膜内外电位差<b>变大</b>→突触后膜更难兴奋。发挥作用后被<b>降解或回收</b>。",
+ trap:"释放方式是<b>胞吐</b>（耗能），不属于跨膜运输中的主动运输。若递质不被及时降解或回收，会引起突触后膜<b>持续兴奋或抑制</b>；毒品、兴奋剂多作用于突触。"},
+
+{ch:2,type:"概念",core:true,ask:"猜一套神经系统",
+ tags:["#一个油门一个刹车，天生对着干","#不受意识支配","#支配心跳、瞳孔、支气管和胃肠"],
+ ans:"自主神经系统（交感神经与副交感神经）",pg:"P18",
+ exp:"支配<b>内脏、血管和腺体</b>的传出神经，不受意识支配。<b>交感神经</b>在兴奋时占优势：心跳加快、支气管扩张、瞳孔扩张、胃肠蠕动和消化腺分泌减弱；<b>副交感神经</b>在安静时占优势：心跳减慢、支气管收缩、瞳孔收缩、胃肠蠕动和消化腺分泌加强。",
+ trap:"两者对同一器官的作用<b>相反（拮抗）</b>，不是协同。另外<b>副交感神经兴奋使膀胱缩小、排出尿液</b>，别记反。"},
+
+{ch:2,type:"结构",core:false,ask:"猜一组脑区",
+ tags:["#四大天王各管一摊，谁受伤谁停工","#人所特有的高级功能","#分为 W、V、S、H 四个区"],
+ ans:"大脑皮层言语区（W / V / S / H 区）",pg:"P38",
+ exp:"<b>W区</b>受损不能写字，<b>V区</b>受损不能看懂文字，<b>S区</b>受损不能讲话，<b>H区</b>受损不能听懂话。语言功能是人脑特有的高级功能。",
+ trap:"记忆口诀：<b>W=Write（写）、V=View（看）、S=Speak（说）、H=Hear（听）</b>。"},
+
+{ch:2,type:"概念",core:true,ask:"猜一种调节关系",
+ tags:["#成年人能憋尿，全靠大脑皮层罩着","#高级中枢调控低级中枢","#典型如大脑皮层调控脊髓"],
+ ans:"神经系统的分级调节",pg:"P33",
+ exp:"位于<b>脊髓</b>的低级中枢受脑中相应<b>高级中枢</b>的调控。排尿反射的低级中枢在脊髓，但受<b>大脑皮层</b>控制，所以成年人能有意识地憋尿；婴幼儿因大脑发育不完善而易遗尿。",
+ trap:"别和体液调节里的“<b>分级调节</b>”（下丘脑—垂体—靶腺体轴）混淆——<b>同名不同义</b>，这是跨章高频易混点。"},
+
+{ch:2,type:"结构",core:false,ask:"猜一个脑区",
+ tags:["#手和舌最“卷”，占地盘最大","#位于大脑皮层中央前回","#代表区与躯体各部分位置倒置"],
+ ans:"第一运动区（中央前回）",pg:"P34",
+ exp:"位于大脑皮层的<b>中央前回</b>，管理躯体运动。皮层代表区与躯体各部分的位置关系<b>倒置</b>（下肢代表区在上方、头面部代表区在下方）；运动越精细复杂的器官（如手、舌、面部），皮层代表区的面积<b>越大</b>。",
+ trap:"是“<b>位置倒置</b>”这一空间关系；<b>一侧大脑皮层支配对侧躯体</b>（左右交叉）是另一回事，别把两句合并成一个答案写。"},
+
+/* ============ 第3章 体液调节 ============ */
+{ch:3,type:"物质",core:false,ask:"猜第一种激素",
+ tags:["#沃泰默亲手拒收的泼天富贵","#人类发现的第一种激素","#由小肠黏膜分泌，作用于胰腺"],
+ ans:"促胰液素",pg:"P45",
+ exp:"由<b>小肠黏膜（其中的内分泌细胞）</b>分泌，随血液循环作用于胰腺，<b>促进胰腺分泌胰液</b>。它的发现打破了“胰液分泌只受神经调节”的定论。",
+ trap:"别写成“由胰腺分泌”——<b>小肠黏膜产生、作用于胰腺</b>，方向不能反。"},
+
+{ch:3,type:"结构",core:true,ask:"猜一类腺体",
+ tags:["#没有导管的“直营模式”，产物直供血管","#汗腺、唾液腺属于另一派","#胰腺身兼两职"],
+ ans:"内分泌腺（区别于外分泌腺）",pg:"P47",
+ exp:"<b>没有导管</b>，其分泌物（激素）直接<b>进入腺体内的毛细血管</b>，随血液循环运往全身。汗腺、唾液腺、胃腺有导管，分泌物经导管流出，属外分泌腺。区分标准：<b>有无导管</b>。",
+ trap:"<b>胰腺是“兼职”</b>：其中的胰岛（内分泌部）分泌胰岛素和胰高血糖素；分泌胰液的部分有导管，属外分泌。"},
+
+{ch:3,type:"概念",core:true,ask:"猜一组特点",
+ tags:["#微量高效，主打一个四两拨千斤","#通过体液进行运输","#只作用于靶器官、靶细胞，是信使不供能"],
+ ans:"激素调节的特点",pg:"P54–55",
+ exp:"①<b>微量和高效</b>；②<b>通过体液运输</b>；③<b>作用于靶器官、靶细胞</b>；④<b>作为信使传递信息</b>。",
+ trap:"第四条最常被挖空：激素是“<b>信使</b>”，起<b>调节</b>作用，<b>不</b>提供能量、<b>不</b>构成细胞结构、<b>不</b>直接参与细胞代谢。"},
+
+{ch:3,type:"过程",core:true,ask:"猜一种调节方式",
+ tags:["#三级转发的组织架构，一层都不能跳","#下丘脑—垂体—靶腺体","#每往下一级，效应放大一次"],
+ ans:"分级调节（下丘脑—垂体—靶腺体轴）",pg:"P53",
+ exp:"<b>下丘脑</b>分泌促激素释放激素作用于<b>垂体</b>，垂体再分泌促激素调控<b>靶腺体</b>的分层控制。三条轴：<b>下丘脑—垂体—甲状腺轴</b>、<b>—性腺轴</b>、<b>—肾上腺皮质轴</b>。",
+ trap:"意义要写全：<b>放大激素的调节效应，形成多级反馈调节，有利于精细调控，从而维持机体稳态</b>。只写“放大”不够。"},
+
+{ch:3,type:"概念",core:true,ask:"猜一种调节方式",
+ tags:["#干得越猛，越被叫停","#系统工作的效果反过来成为信息","#甲状腺激素会抑制上游两级"],
+ ans:"（负）反馈调节",pg:"P53",
+ exp:"<b>系统本身工作的效果，反过来又作为信息调节该系统的工作</b>，叫作反馈调节。甲状腺激素增多到一定程度，会<b>抑制</b>下丘脑和垂体的分泌活动，属典型的负反馈。",
+ trap:"别一激动写成“正反馈”。<b>正反馈</b>的例子：排尿、排便、分娩、血液凝固。另外“分级调节”和“反馈调节”常同框出现，但不是一个概念。"},
+
+{ch:3,type:"物质",core:true,ask:"猜一种激素",
+ tags:["#孤勇者：全场唯一降血糖","#促进三个去路、抑制两个来源","#本质是蛋白质，不能口服"],
+ ans:"胰岛素",pg:"P51",
+ exp:"由<b>胰岛B细胞</b>分泌，是<b>唯一</b>能降低血糖的激素。<b>促进</b>：血糖氧化分解、合成肝糖原和肌糖原、转化为非糖物质；<b>抑制</b>：肝糖原分解、非糖物质转化。",
+ trap:"本质是蛋白质，<b>口服会被消化酶分解而失效</b>，只能注射。答题时“促进去路”和“抑制来源”是两条腿，只写去路会扣分。"},
+
+{ch:3,type:"物质",core:true,ask:"猜一种激素",
+ tags:["#和胰岛素打对台，负责把血糖抬上去","#促进肝糖原分解","#肌糖原帮不上忙：差一步进不了血"],
+ ans:"胰高血糖素",pg:"P51",
+ exp:"由<b>胰岛A细胞</b>分泌，促进<b>肝糖原分解</b>和<b>非糖物质转化为葡萄糖</b>，从而使血糖升高，与胰岛素的作用相抗衡。",
+ trap:"<b>肌糖原不能直接分解成葡萄糖来补充血糖</b>——年年有人栽。肾上腺素也能升高血糖，与胰高血糖素是<b>协同</b>关系。"},
+
+{ch:3,type:"物质",core:true,ask:"猜一种激素",
+ tags:["#名字带“利尿”，干的却是抗利尿的活","#在下丘脑合成、由垂体后叶释放","#促进肾小管和集合管重吸收水"],
+ ans:"抗利尿激素（ADH）",pg:"P60",
+ exp:"由<b>下丘脑神经分泌细胞</b>合成，经<b>垂体后叶</b>释放，促进<b>肾小管和集合管对水的重吸收</b>，使尿量减少。",
+ trap:"“<b>合成</b>”在下丘脑、“<b>释放</b>”在垂体——选择题常把两者拆开分别设陷阱。"},
+
+{ch:3,type:"物质",core:true,ask:"猜一种激素",
+ tags:["#Na⁺往回薅、K⁺往外薅","#由肾上腺皮质分泌","#血钠含量降低时分泌量增加"],
+ ans:"醛固酮",pg:"P60",
+ exp:"由<b>肾上腺皮质</b>分泌，促进肾小管和集合管<b>重吸收Na⁺、分泌K⁺</b>，从而维持血钠含量的平衡。细胞外液量减少、血钠含量降低时，其分泌量增加。",
+ trap:"与抗利尿激素分清楚：<b>抗利尿激素管水的重吸收，醛固酮管Na⁺的重吸收</b>；两者作用部位都在肾小管和集合管，极易混淆。"},
+
+{ch:3,type:"过程",core:true,ask:"猜一种调节过程",
+ tags:["#冷了战栗抖三抖，热了出汗降降温","#体温调节中枢位于下丘脑","#散热主战场在皮肤"],
+ ans:"体温调节（产热与散热的平衡）",pg:"P58",
+ exp:"机体热量的主要来源是<b>代谢产热</b>；<b>安静时</b>主要产热器官是<b>肝、脑</b>，<b>运动时</b>是<b>骨骼肌</b>；<b>皮肤</b>是人体主要的散热器官。调节方式属于<b>神经—体液调节</b>。",
+ trap:"三个部位别串：<b>体温调节中枢在下丘脑、温度感受器主要分布在皮肤、产生冷觉热觉的中枢在大脑皮层</b>。寒冷时既增加产热（甲状腺激素、肾上腺素分泌增加，骨骼肌战栗），又减少散热（皮肤血管收缩、汗腺分泌减少）。"},
+
+{ch:3,type:"比较",core:true,ask:"猜一组对比",
+ tags:["#一个是闪电侠，一个是马拉松选手","#一个依赖反射弧，一个依赖体液运输","#体液调节可看作神经调节的一个环节"],
+ ans:"体液调节与神经调节的比较",pg:"P57",
+ exp:"<b>神经调节</b>：作用途径为反射弧 / 反应迅速 / 范围准确、比较局限 / 时间短暂 / 作用对象为效应器。<b>体液调节</b>：作用途径为体液运输 / 较缓慢 / 较广泛 / 时间比较长 / 作用对象为靶细胞、靶器官。",
+ trap:"两者的联系要背下来：①不少内分泌腺直接或间接受<b>中枢神经系统</b>的调节，<b>体液调节可看作神经调节的一个环节</b>；②激素也能影响神经系统（<b>甲状腺激素能促进神经系统的发育</b>）。"},
+
+{ch:3,type:"比较",core:false,ask:"猜一条规律",
+ tags:["#蛋白质类激素进消化道就被“团灭”","#所以胰岛素不能口服，只能注射","#性激素、甲状腺激素可以口服"],
+ ans:"激素的化学本质与给药方式",pg:"拓展",
+ exp:"<b>多肽/蛋白质类</b>（促激素释放激素、促激素、生长激素、抗利尿激素、胰岛素、胰高血糖素）<b>只能注射，不能口服</b>；<b>氨基酸衍生物类</b>（甲状腺激素、肾上腺素）和<b>固醇类</b>（性激素、肾上腺皮质激素）<b>既可注射也可口服</b>。",
+ trap:"判断标准是<b>会不会被消化酶分解</b>。顺带一提：缺碘→甲状腺激素合成不足→负反馈调节减弱→促甲状腺激素增多→甲状腺代偿性增生（地方性甲状腺肿）。"},
+
+{ch:3,type:"比较",core:true,ask:"猜一组病因",
+ tags:["#一个是厂子停产，一个是货到了没人签收","#胰岛素分泌不足 vs 胰岛素抵抗","#前者需要终身注射胰岛素"],
+ ans:"1型糖尿病与2型糖尿病",pg:"P52",
+ exp:"<b>1型</b>：胰岛B细胞受损，<b>胰岛素分泌不足</b>，需注射胰岛素治疗。<b>2型</b>：机体<b>对胰岛素不敏感</b>（胰岛素抵抗），常与遗传、生活方式相关。",
+ trap:"区分关键在<b>胰岛素含量</b>：1型是“源头供不上”，2型是“有货但接收端失灵”。另外记住：<b>血糖调节中枢在下丘脑</b>，调节方式是<b>神经—体液调节</b>。"},
+
+/* ============ 第4章 免疫调节 ============ */
+{ch:4,type:"结构",core:false,ask:"猜一个器官",
+ tags:["#T细胞的母校","#既是免疫器官，又是内分泌腺","#还能分泌胸腺激素"],
+ ans:"胸腺",pg:"P67",
+ exp:"作为<b>免疫器官</b>，它是T细胞分化、发育、成熟的场所；作为<b>内分泌腺</b>，它能分泌<b>胸腺激素</b>，促进T细胞的发育和成熟。所有免疫细胞从根本上都起源于<b>骨髓中的造血干细胞</b>。",
+ trap:"两组分类别混：<b>骨髓和胸腺</b>是免疫细胞<b>产生并发育成熟</b>的场所；<b>脾、淋巴结、扁桃体</b>是免疫细胞<b>集中分布</b>的场所。"},
+
+{ch:4,type:"细胞",core:true,ask:"猜一类细胞",
+ tags:["#把抗原嚼碎了再上交","#B细胞、树突状细胞、巨噬细胞同类","#能识别抗原，但不具特异性"],
+ ans:"抗原呈递细胞（APC）",pg:"P68",
+ exp:"<b>B细胞、树突状细胞和巨噬细胞</b>都能<b>摄取、加工处理抗原</b>，并将抗原信息<b>呈递</b>给其他免疫细胞（如辅助性T细胞）。",
+ trap:"本册“识别能力”要分三层记：<b>完全不能识别</b>=浆细胞；<b>能识别但不具特异性</b>=抗原呈递细胞；<b>能特异性识别</b>=B细胞、辅助性T细胞、细胞毒性T细胞、记忆细胞。"},
+
+{ch:4,type:"概念",core:true,ask:"猜一组功能",
+ tags:["#御敌、保洁、抓内鬼，一个部门全包了","#清除衰老或损伤的自身细胞","#识别并清除突变的细胞"],
+ ans:"免疫系统的三大功能",pg:"P69",
+ exp:"<b>免疫防御</b>：排除外来抗原性异物（最基本的功能）；<b>免疫自稳</b>：清除衰老或损伤的细胞，维持内环境稳态；<b>免疫监视</b>：识别并清除突变的细胞，防止肿瘤发生。",
+ trap:"情境判断：机体清除新冠病毒→<b>免疫防御</b>；清除体内衰老的红细胞→<b>免疫自稳</b>；艾滋病患者易患恶性肿瘤→<b>免疫监视</b>功能低下。三个词要写全字。"},
+
+{ch:4,type:"概念",core:true,ask:"猜一套防线",
+ tags:["#第一道是门禁，第三道是特种兵","#皮肤、黏膜构成第一道","#体液中的杀菌物质和吞噬细胞是第二道"],
+ ans:"人体免疫的三道防线",pg:"P69–70",
+ exp:"<b>第一道</b>：皮肤、黏膜的屏障作用；<b>第二道</b>：体液中的杀菌物质（如溶菌酶）和吞噬细胞；<b>第三道</b>：特异性免疫（体液免疫 + 细胞免疫），由免疫器官和免疫细胞借助<b>血液循环和淋巴循环</b>组成。",
+ trap:"同一种物质在不同位置<b>归属不同的防线</b>：唾液、泪液中的溶菌酶属于<b>第一道</b>防线，血浆中的溶菌酶属于<b>第二道</b>防线。前两道都属于非特异性免疫。"},
+
+{ch:4,type:"物质",core:false,ask:"猜一类物质",
+ tags:["#抗体、溶菌酶、细胞因子的家族群名","#由免疫细胞或其他细胞产生","#都算发挥免疫作用的物质"],
+ ans:"免疫活性物质",pg:"P68",
+ exp:"由<b>免疫细胞或其他细胞</b>产生、并发挥免疫作用的物质，主要包括<b>抗体、溶菌酶、细胞因子</b>等。",
+ trap:"定义中的“<b>或其他细胞</b>”并非多余，别漏写。免疫系统的三大组成要配套记忆：<b>免疫器官、免疫细胞、免疫活性物质</b>。"},
+
+{ch:4,type:"过程",core:true,ask:"猜一种免疫方式",
+ tags:["#抗体专逮这一家的病原体，咬定不松口","#由B细胞增殖分化出浆细胞","#只对付内环境中的病原体"],
+ ans:"体液免疫",pg:"P72",
+ exp:"抗原刺激B细胞后，B细胞<b>分裂分化</b>为<b>浆细胞和记忆B细胞</b>；浆细胞分泌<b>抗体</b>，抗体与病原体<b>特异性结合</b>，抑制病原体的增殖或对人体细胞的黏附。",
+ trap:"抗体<b>无法进入宿主细胞</b>，对付不了已侵入细胞内部的病原体，那部分要交给细胞免疫——这正是体液免疫与细胞免疫配合的题眼。"},
+
+{ch:4,type:"过程",core:true,ask:"猜一种免疫方式",
+ tags:["#细胞毒性T细胞一上手，靶细胞当场“裂开”","#使其裂解并暴露其中的病原体","#全过程不产生抗体"],
+ ans:"细胞免疫",pg:"P73",
+ exp:"抗原呈递细胞摄取、处理并呈递抗原 → <b>辅助性T细胞</b>识别 → <b>细胞毒性T细胞</b>活化（还需靶细胞等参与）→ 增殖分化为新的<b>细胞毒性T细胞</b>和<b>记忆T细胞</b> → 与<b>靶细胞</b>接触，使其裂解。",
+ trap:"细胞免疫<b>不产生抗体</b>。它只负责“掀开靶细胞”，把胞内的病原体暴露出来，最后由<b>体液免疫产生的抗体</b>收尾。"},
+
+{ch:4,type:"过程",core:true,ask:"猜一组条件",
+ tags:["#两把钥匙启动，细胞因子再加个buff","#辅助性T细胞与B细胞结合","#两个信号缺一不可"],
+ ans:"B细胞活化的三个条件",pg:"P73",
+ exp:"<b>信号一</b>：一些病原体直接与B细胞接触；<b>信号二</b>：辅助性T细胞表面的特定分子发生变化并与B细胞结合；<b>细胞因子</b>促进B细胞的分裂、分化过程。",
+ trap:"牢牢记住“<b>两信号 + 细胞因子</b>”三点。对照记忆：细胞免疫中，参与<b>细胞毒性T细胞</b>活化的是<b>靶细胞、辅助性T细胞</b>等。"},
+
+{ch:4,type:"细胞",core:true,ask:"猜一种细胞",
+ tags:["#古希腊掌管抗体的神","#唯一不能识别抗原的免疫细胞","#高度分化，不再分裂"],
+ ans:"浆细胞（效应B细胞）",pg:"P72",
+ exp:"由<b>B细胞或记忆B细胞</b>增殖分化而来，能合成并分泌<b>抗体</b>。它是唯一<b>不能识别抗原</b>的免疫细胞，且已高度分化，不再进行分裂。",
+ trap:"“能否识别”清单：<b>浆细胞不能识别抗原</b>；<b>抗原呈递细胞能识别但不具特异性</b>；其余免疫细胞均可特异性识别抗原。"},
+
+{ch:4,type:"物质",core:false,ask:"猜一类物质",
+ tags:["#专职打call，催免疫细胞增殖分化","#主要由辅助性T细胞分泌","#化学本质多为蛋白质"],
+ ans:"细胞因子",pg:"P68",
+ exp:"主要由<b>辅助性T细胞</b>分泌的信号分子，能促进B细胞、细胞毒性T细胞的<b>增殖与分化</b>。与抗体、溶菌酶并列，属于免疫活性物质。",
+ trap:"题干若按“<b>识别 → 呈递 → 分泌</b>”这条流水线设问，分泌细胞因子的环节归属于<b>辅助性T细胞</b>。"},
+
+{ch:4,type:"现象",core:true,ask:"猜一种免疫现象",
+ tags:["#二周目玩家，见了熟怪直接秒","#记忆细胞迅速增殖分化","#更快速、更强烈，抗体浓度更高"],
+ ans:"二次免疫应答",pg:"P74",
+ exp:"<b>相同抗原</b>再次入侵时，<b>记忆细胞</b>迅速增殖分化，反应<b>更快速、更强烈</b>，产生的<b>抗体浓度更高</b>，能在机体尚未患病之前消灭抗原。这正是疫苗需要多次接种的原理。",
+ trap:"曲线三要素：二次免疫产生抗体<b>更快、峰值更高、维持时间更长</b>。初次接触抗原时的反应叫<b>初次免疫</b>，不要写成二次免疫。"},
+
+{ch:4,type:"概念",core:true,ask:"猜一种细胞命运",
+ tags:["#体面退场，全程按基因剧本走","#由基因决定的程序性死亡","#靶细胞被诱导裂解死亡就属于它"],
+ ans:"细胞凋亡",pg:"拓展",
+ exp:"由<b>基因</b>决定的细胞自动结束生命的过程。活化的细胞毒性T细胞与<b>靶细胞</b>接触，使其裂解死亡，这种死亡方式就属于<b>细胞凋亡</b>。",
+ trap:"与<b>细胞坏死</b>区分：凋亡是<b>主动的、程序性的、对机体有利</b>的；坏死是被动的病理性死亡，往往引起炎症反应。"},
+
+{ch:4,type:"现象",core:true,ask:"猜一种异常反应",
+ tags:["#免疫系统戏太多，把花粉当终极boss打","#已免疫的机体再次接触才会发生","#初次接触过敏原时不算"],
+ ans:"过敏反应",pg:"P77",
+ exp:"<b>已免疫</b>的机体，在<b>再次接触相同的抗原（过敏原）</b>时发生的<b>组织损伤或功能紊乱</b>。特点：发作迅速、反应强烈、消退较快，有明显遗传倾向和个体差异。",
+ trap:"<b>初次接触过敏原时只发生正常的免疫反应</b>（产生的抗体吸附在某些细胞表面），<b>不属于过敏反应</b>——这是本册最高频的坑之一。"},
+
+{ch:4,type:"概念",core:false,ask:"猜一类疾病",
+ tags:["#把自家队友当人机炸","#对自身成分发起攻击","#如风湿性心脏病、系统性红斑狼疮"],
+ ans:"自身免疫病",pg:"P78",
+ exp:"自身免疫系统对<b>自身成分</b>发生免疫反应，造成<b>组织和器官的损伤</b>。常见病例：风湿性心脏病、类风湿关节炎、系统性红斑狼疮等。",
+ trap:"与过敏反应区分：<b>过敏反应</b>是对外来无害物质<b>反应过度</b>；<b>自身免疫病</b>是免疫系统<b>攻击自身的成分</b>。"},
+
+{ch:4,type:"概念",core:true,ask:"猜一种疾病",
+ tags:["#一支专打“辅助”的刺客队伍","#主要侵入并破坏辅助性T细胞","#血液传播、母婴传播、性传播"],
+ ans:"艾滋病（AIDS，获得性免疫缺陷综合征）",pg:"P79",
+ exp:"由<b>人类免疫缺陷病毒（HIV）</b>引起，主要侵入并破坏<b>辅助性T细胞</b>，使机体的<b>体液免疫和细胞免疫都受到破坏</b>，患者常死于严重感染或恶性肿瘤。",
+ trap:"HIV破坏的是<b>辅助性T细胞</b>，不是吞噬细胞也不是B细胞；因为它打掉的是免疫应答的“枢纽”，所以两条免疫路线<b>一起崩</b>。免疫缺陷病分为<b>先天性和获得性</b>两类。"},
+
+{ch:4,type:"概念",core:true,ask:"猜一种生物制品",
+ tags:["#提前给免疫系统发预习资料，考试不慌","#由灭活或减毒的病原体制成","#促使机体产生抗体和记忆细胞"],
+ ans:"疫苗",pg:"P85",
+ exp:"通常用<b>灭活的或减毒的病原体</b>制成，接种后促使机体产生<b>抗体和记忆细胞</b>，属于<b>免疫预防</b>。接种多针是为了产生<b>更多的抗体和记忆细胞</b>。",
+ trap:"疫苗=免疫<b>预防</b>；注射抗体（抗血清）=免疫<b>治疗</b>，两者的机制和起效时效都不同，别混为一谈。"},
+
+{ch:4,type:"物质",core:false,ask:"猜一种身份标签",
+ tags:["#每个细胞自带的工牌","#器官移植前必须先做配型","#供者与受者相似度需达一半以上"],
+ ans:"组织相容性抗原（HLA，人类白细胞抗原）",pg:"P84",
+ exp:"每个人<b>细胞表面</b>都带有一组与别人不同的蛋白质，是标明细胞身份的标签物质。器官移植的成败主要取决于<b>供者与受者</b>的HLA是否一致或相似，研究表明相似度达到<b>50%以上</b>就可以进行移植。",
+ trap:"是<b>供者与受者之间</b>的匹配，不是单看受者一方；移植后通常还需长期使用<b>免疫抑制剂</b>。"}
+];
+
+const CH = {1:{name:"第1章 内环境与稳态",cls:"c1",color:"var(--ch1)"},
+            2:{name:"第2章 神经调节",cls:"c2",color:"var(--ch2)"},
+            3:{name:"第3章 体液调节",cls:"c3",color:"var(--ch3)"},
+            4:{name:"第4章 免疫调节",cls:"c4",color:"var(--ch4)"}};
+
+let mode="stage", curCh="all", idx=0, cur=[], revealed=false;
+
+function esc(s){return s;}
+
+function applyFilter(){
+  const coreOnly=document.getElementById('onlyCore').checked;
+  cur = DATA.filter(d=>(curCh==='all'||String(d.ch)===curCh)&&(!coreOnly||d.core));
+  cur.forEach((d,i)=>d._n=i+1);
+  if(idx>=cur.length) idx=0;
+  if(mode==='stage') renderStage(); else renderList();
+}
+
+function setCh(c){
+  curCh=c; idx=0;
+  document.querySelectorAll('[data-ch]').forEach(t=>t.classList.toggle('on',t.dataset.ch===c));
+  applyFilter();
+}
+function setMode(m){
+  mode=m;
+  document.getElementById('modeStage').classList.toggle('on',m==='stage');
+  document.getElementById('modeList').classList.toggle('on',m==='list');
+  document.getElementById('stage').style.display = m==='stage'?'flex':'none';
+  document.getElementById('list').style.display  = m==='list' ?'block':'none';
+  applyFilter();
+}
+
+function renderStage(){
+  const stage=document.getElementById('stage');
+  if(!cur.length){stage.innerHTML='<p style="color:var(--ink-3)">当前筛选下没有题目。</p>';return;}
+  const d=cur[idx], c=CH[d.ch];
+  document.getElementById('counter').textContent=`${idx+1} / ${cur.length}　（题库共 ${DATA.length} 题）`;
+  const pgChip = d.pg==='拓展'
+    ? '<span class="chip pg">拓展 · 教材外补充</span>'
+    : `<span class="chip pg">课本 ${d.pg} 页</span>`;
+  const doneBtn = (revealed && idx===cur.length-1)
+    ? `<div class="done-banner"><span>这一轮刷完了！用概念导图做最后的总览复盘：</span><button onclick="openMap()">打开思维导图</button></div>`:'';
+  const tags = d.tags.map(t=>`<span class="tag" style="color:${c.color};border-color:${c.color}40;background:${c.color}0d">${t}</span>`).join('');
+  const dots = cur.map((x,i)=>`<span class="dot ${i===idx?'now':''}" onclick="go(${i})"></span>`).join('');
+  stage.innerHTML = `
+  <section class="stage-card">
+    <div class="sc-top">
+      <span class="chip ch" style="background:${c.color}">${c.name}</span>
+      <span class="chip">${d.type}</span>
+      <span class="chip">第 ${d._n} 题</span>
+      ${d.core?'<span class="chip core">核心必考</span>':''}
+      ${pgChip}
+    </div>
+    <div class="sc-body">
+      <div class="ask">根据课本内容 · ${d.ask}</div>
+      <div class="tags">${tags}</div>
+      <div class="reveal-slot" id="slot">
+        ${revealed?`
+          <div class="ans-box">
+            <div class="ans-name" style="color:${c.color}">${d.ans}</div>
+            <div class="ans-meta">${c.name} · ${d.type} · ${d.pg==='拓展'?'拓展补充（教材未直接呈现）':'课本 '+d.pg+' 页 · 复习完可翻书对照'}</div>
+            <div class="sec"><span class="sec-head">术语升华</span><br>${d.exp}</div>
+            <div class="sec trap"><span class="sec-head">易错提醒</span><br>${d.trap}</div>
+          </div>`:`
+          <button class="reveal-btn" onclick="toggle()">点 击 揭 晓 答 案</button>`}
+      </div>
+      ${doneBtn}
+    </div>
+    <div class="sc-foot">
+      <button onclick="step(-1)">← 上一题</button>
+      <div class="dots">${dots}</div>
+      <button onclick="step(1)">下一题 →</button>
+    </div>
+  </section>`;
+}
+
+function renderList(){
+  const list=document.getElementById('list');
+  document.getElementById('counter').textContent=`共 ${cur.length} 题`;
+  list.innerHTML = `<div class="grid">` + cur.map(d=>{
+    const c=CH[d.ch];
+    return `<div class="mini">
+      <div class="m-top">
+        <span class="num">${String(d._n).padStart(2,'0')}</span>
+        <span class="chip ch" style="background:${c.color};font-size:11px;padding:2px 8px">${c.name}</span>
+        <span class="chip" style="font-size:11px;padding:2px 8px">${d.type}</span>
+        ${d.core?'<span class="chip core" style="font-size:11px;padding:2px 8px">核心</span>':''}
+        <span class="chip pg" style="font-size:11px;padding:2px 8px">${d.pg==='拓展'?'拓展':d.pg+' 页'}</span>
+      </div>
+      <div class="m-tags">${d.tags.map(t=>`<span class="m-tag" style="color:${c.color};background:${c.color}0f">${t}</span>`).join('')}</div>
+      <div class="m-ans" onclick="this.classList.toggle('open')">${d.ans}<span style="font-size:12px;font-weight:600;color:var(--brand);opacity:.85;margin-left:8px">${d.pg==='拓展'?'（拓展）':'· '+d.pg}</span></div>
+      <div class="m-exp"><b>讲解：</b>${d.exp}</div>
+      <div class="m-trap"><b>易错：</b>${d.trap}</div>
+    </div>`;
+  }).join('') + `</div>`;
+}
+
+function go(i){idx=i;revealed=false;renderStage();}
+function step(k){
+  idx=(idx+k+cur.length)%cur.length; revealed=false; renderStage();
+}
+function toggle(){
+  const wasRevealed=revealed;
+  revealed=!revealed;renderStage();
+  // 刷完最后一题 → 自动弹出思维导图
+  if(!wasRevealed && revealed && cur.length && idx===cur.length-1){
+    setTimeout(openMap,600);
+  }
+}
+function revealAll(){
+  revealed=true;
+  if(mode==='list'){document.querySelectorAll('.m-ans').forEach(e=>e.classList.add('open'));}
+  renderStage();
+}
+
+document.addEventListener('keydown',e=>{
+  if(mode!=='stage') return;
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='Spacebar'){e.preventDefault();step(1);}
+  else if(e.key==='ArrowLeft'){e.preventDefault();step(-1);}
+  else if(e.key==='Enter'){e.preventDefault();toggle();}
+});
+
+document.getElementById('total').textContent=DATA.length;
+document.getElementById('coreNum').textContent=DATA.filter(d=>d.core).length;
+applyFilter();
+
+/* ================= 思维导图 ================= */
+function xesc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function shortName(a){
+  const n=a.split('（')[0];
+  return n.length>14 ? n.slice(0,13)+'…' : n;
+}
+let mapBuilt=false;
+
+function buildMap(){
+  if(mapBuilt) return; mapBuilt=true;
+  const LEAF_H=34, GAP=9, SEC_GAP=34;
+  const COL_W=268, CH_W=200, ROOT_W=190;
+  const W=1560;
+  // 每章的叶子
+  const groups=[1,2,3,4].map(c=>DATA.filter(d=>d.ch===c));
+  // 布局：左列=第1、2章，右列=第3、4章
+  const leftH  = groups[0].length*(LEAF_H+GAP) + groups[1].length*(LEAF_H+GAP) + SEC_GAP;
+  const rightH = groups[2].length*(LEAF_H+GAP) + groups[3].length*(LEAF_H+GAP) + SEC_GAP;
+  const H = Math.max(leftH,rightH) + 90;
+  const midY = H/2;
+
+  let svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="PingFang SC,Microsoft YaHei,sans-serif">`;
+
+  function leafRect(x,y,w,label,color,idxInData){
+    return `<g class="leaf" data-idx="${idxInData}">
+      <rect x="${x}" y="${y}" width="${w}" height="${LEAF_H}" rx="8"
+        fill="#ffffff" stroke="${color}" stroke-width="1.4"/>
+      <text x="${x+w/2}" y="${y+LEAF_H/2+5}" text-anchor="middle"
+        font-size="13.5" fill="#1c2024">${xesc(label)}</text>
+    </g>`;
+  }
+
+  function branch(side, gi, gIdx){
+    const g = groups[gi], color = CH[gi+1].color;
+    const xLeaf = side==='L' ? 34 : W-34-COL_W;
+    const xCh   = side==='L' ? 34+COL_W+44 : W-34-COL_W-44-CH_W;
+    let totalH = g.length*(LEAF_H+GAP)-GAP;
+    let y = gi<2 ? 60+(gi===0?0:groups[0].length*(LEAF_H+GAP)+SEC_GAP)
+                 : 60+(gi===2?0:groups[2].length*(LEAF_H+GAP)+SEC_GAP);
+    const yStart=y, yCh=y+totalH/2;
+    let out='';
+    g.forEach((d,k)=>{
+      const idxInData = DATA.indexOf(d);
+      const ly = y + k*(LEAF_H+GAP);
+      // 连线：章节点 → 叶子
+      const x1 = side==='L' ? xCh+CH_W : xCh, y1=yCh;
+      const x2 = side==='L' ? xLeaf+COL_W : xLeaf, y2=ly+LEAF_H/2;
+      const cx = (x1+x2)/2;
+      out += `<path d="M ${x1} ${y1} C ${cx} ${y1}, ${cx} ${y2}, ${x2} ${y2}"
+        fill="none" stroke="${color}" stroke-width="1.1" opacity=".38"/>`;
+      out += leafRect(xLeaf, ly, COL_W, shortName(d.ans), color, idxInData);
+    });
+    // 章节节点
+    out += `<g class="branch">
+      <rect x="${xCh}" y="${yCh-24}" width="${CH_W}" height="48" rx="24" fill="${color}"/>
+      <text x="${xCh+CH_W/2}" y="${yCh+6}" text-anchor="middle" font-size="16"
+        font-weight="700" fill="#fff">${CH[gi+1].name}</text>
+    </g>`;
+    // 章节节点 → 根
+    const rx = side==='L' ? (W-ROOT_W)/2 : (W+ROOT_W)/2;
+    const cx=(xCh+rx)/2;
+    out += `<path d="M ${side==='L'?xCh:xCh+CH_W} ${yCh} C ${cx} ${yCh}, ${cx} ${midY}, ${rx} ${midY}"
+      fill="none" stroke="${color}" stroke-width="2.2" opacity=".55"/>`;
+    return out;
+  }
+
+  svg += branch('L',0);
+  svg += branch('L',1);
+  svg += branch('R',2);
+  svg += branch('R',3);
+
+  // 根节点
+  svg += `<g>
+    <rect x="${(W-ROOT_W)/2}" y="${midY-34}" width="${ROOT_W}" height="68" rx="16"
+      fill="#1c2024"/>
+    <text x="${W/2}" y="${midY-4}" text-anchor="middle" font-size="18" font-weight="800" fill="#fff">选择性必修1</text>
+    <text x="${W/2}" y="${midY+20}" text-anchor="middle" font-size="15" fill="#cfd6db">稳态与调节 · 第1—4章</text>
+  </g>`;
+  svg += '</svg>';
+  document.getElementById('mapWrap').innerHTML = svg;
+
+  // 点击叶子 → 概念详情
+  document.querySelectorAll('#mapWrap .leaf').forEach(el=>{
+    el.addEventListener('click',()=>showNode(DATA[+el.dataset.idx]));
+  });
+}
+
+function openMap(){ buildMap(); document.getElementById('mapOverlay').classList.add('on'); }
+function closeMap(){ document.getElementById('mapOverlay').classList.remove('on'); }
+
+function showNode(d){
+  const c=CH[d.ch];
+  const pg = d.pg==='拓展' ? '拓展 · 教材外补充' : `课本 ${d.pg} 页 · 翻书对照`;
+  document.getElementById('nodeCard').innerHTML = `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+      <span class="chip ch" style="background:${c.color}">${c.name}</span>
+      <span class="chip">${d.type}</span>
+      <span class="chip pg">${pg}</span>
+    </div>
+    <div class="tags">${d.tags.map(t=>`<span class="tag" style="color:${c.color};border-color:${c.color}40;background:${c.color}0d">${t}</span>`).join('')}</div>
+    <div style="font-size:24px;font-weight:800;color:${c.color};margin-bottom:10px">${d.ans}</div>
+    <div class="sec"><span class="sec-head">术语升华</span><br>${d.exp}</div>
+    <div class="sec trap"><span class="sec-head">易错提醒</span><br>${d.trap}</div>
+    <div class="node-foot">
+      <button onclick="jumpTo(${DATA.indexOf(d)})" style="border-color:${c.color};color:${c.color}">去复习卡刷这题</button>
+      <button onclick="closeNode()">关闭</button>
+    </div>`;
+  document.getElementById('nodeOverlay').classList.add('on');
+}
+function closeNode(){ document.getElementById('nodeOverlay').classList.remove('on'); }
+function jumpTo(i){
+  closeNode(); closeMap();
+  if(mode!=='stage') setMode('stage');
+  const pos = cur.indexOf(DATA[i]);
+  go(pos>=0?pos:0);
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeNode();closeMap();}
+});
+</script>
 </body>
 </html>
